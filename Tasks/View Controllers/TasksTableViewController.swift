@@ -7,10 +7,27 @@
 //
 
 import UIKit
+import CoreData
 
 class TasksTableViewController: UITableViewController {
 
-
+    var tasks: [Task]{
+        //Fetch request to comunicate wit the DB
+        let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
+        
+        do{
+            return try CoreDataStack.shared.mainContext.fetch(fetchRequest)
+        }catch{
+            NSLog("Error fetching tasks: \(error)")
+            return []
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        //Realod data
+        tableView.reloadData()
+    }
 
     // MARK: - Table view data source
 
@@ -21,7 +38,7 @@ class TasksTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
        
-        return 1
+        return tasks.count
     }
 
  
@@ -29,7 +46,7 @@ class TasksTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath)
 
         // Configure the cell...
-        cell.textLabel?.text = "Fritz"
+        cell.textLabel?.text = tasks[indexPath.row].name
         
         return cell
     }

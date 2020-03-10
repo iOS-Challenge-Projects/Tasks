@@ -25,14 +25,16 @@ class TaskDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        // Clear field
+        notesTextView.text = ""
+        
     }
     
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if let _ = task{
+        if task == nil {
             //If no task was passed in, assume the user wants to create one
             //so add a button to the navbar to "save" the new task
             navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(save))
@@ -49,6 +51,10 @@ class TaskDetailViewController: UIViewController {
         let _ = Task(name: name, notes: notes)
         
         saveTask()
+        
+        //Dismiss modal
+        navigationController?.dismiss(animated: true, completion: nil)
+    
     }
     
     
@@ -59,7 +65,5 @@ class TaskDetailViewController: UIViewController {
             NSLog("Error while saving data \(error)")
         }
     }
-
-
 }
 

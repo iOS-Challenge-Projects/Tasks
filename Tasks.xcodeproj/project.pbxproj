@@ -66,17 +66,33 @@
 			children = (
 				044AB4772416A5CF0081A60F /* AppDelegate.swift */,
 				044AB4792416A5CF0081A60F /* SceneDelegate.swift */,
-				044AB47B2416A5CF0081A60F /* TaskDetailViewController.swift */,
+				044AB494241736270081A60F /* View Controllers */,
 				044AB49224172DE20081A60F /* Task+Convinience.swift */,
-				044AB48B2416ACF50081A60F /* TasksTableViewController.swift */,
 				044AB48D2416AE950081A60F /* Tasks.xcdatamodeld */,
 				044AB4902416B0D70081A60F /* CoreDataStack.swift */,
-				044AB47D2416A5CF0081A60F /* Main.storyboard */,
+				044AB495241736490081A60F /* StoryBoard */,
 				044AB4802416A5D20081A60F /* Assets.xcassets */,
 				044AB4822416A5D20081A60F /* LaunchScreen.storyboard */,
 				044AB4852416A5D20081A60F /* Info.plist */,
 			);
 			path = Tasks;
+			sourceTree = "<group>";
+		};
+		044AB494241736270081A60F /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				044AB47B2416A5CF0081A60F /* TaskDetailViewController.swift */,
+				044AB48B2416ACF50081A60F /* TasksTableViewController.swift */,
+			);
+			path = "View Controllers";
+			sourceTree = "<group>";
+		};
+		044AB495241736490081A60F /* StoryBoard */ = {
+			isa = PBXGroup;
+			children = (
+				044AB47D2416A5CF0081A60F /* Main.storyboard */,
+			);
+			path = StoryBoard;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
