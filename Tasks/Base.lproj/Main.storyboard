@@ -141,6 +141,10 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" id="1Ua-yk-q2z"/>
+                    <connections>
+                        <outlet property="nameTextField" destination="nyj-uF-42H" id="6Z1-cC-GhG"/>
+                        <outlet property="notesTextView" destination="Lez-eH-NUc" id="VL6-HB-7kp"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
