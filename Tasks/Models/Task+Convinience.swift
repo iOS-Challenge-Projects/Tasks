@@ -14,5 +14,6 @@ extension Task{
         self.init(context: context)
         self.name = name
         self.notes = notes
+//        self.completed = completed
     }
 }
