@@ -57,10 +57,24 @@ class TasksTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+            let task = tasks[indexPath.row]
+            
+            //Here we delete the specific task/entry
+            CoreDataStack.shared.mainContext.delete(task)
+            
+            //Save changes
+            do{
+                try CoreDataStack.shared.mainContext.save()
+                //if the deletion from CoreData was successfully removed and saved then remove it from table view
+                tableView.deleteRows(at: [indexPath], with: .fade)
+            }catch{
+                //if for some reason it could not be deleted reset it to original state
+                CoreDataStack.shared.mainContext.reset()
+                NSLog("Error saving managed Object: \(error)")
+            }
+            
+            
+        }
     }
  
 
@@ -71,6 +85,18 @@ class TasksTableViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
+        if segue.identifier == "ShowTaskDetailSegue" {
+            //Downcast destination
+            if let detailVC = segue.destination as? TaskDetailViewController {
+                //get index
+                if let indexPath = tableView.indexPathForSelectedRow{
+                    //pass selected row to detail view
+                    detailVC.task = tasks[indexPath.row]
+                }
+            }
+        }else if segue.identifier == "NewTaskModelSegue"{
+            
+        }
     }
  
 

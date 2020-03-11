@@ -81,8 +81,8 @@
 		044AB494241736270081A60F /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				044AB47B2416A5CF0081A60F /* TaskDetailViewController.swift */,
 				044AB48B2416ACF50081A60F /* TasksTableViewController.swift */,
+				044AB47B2416A5CF0081A60F /* TaskDetailViewController.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";

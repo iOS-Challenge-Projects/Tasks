@@ -42,7 +42,7 @@ class TaskDetailViewController: UIViewController {
         
     }
     
-    //Use @objc dur to the way we call the func in the action navButton above
+    //Use @objc due to the way we call the func in the action navButton above
     @objc func save(){
         guard let name = nameTextField.text, !name.isEmpty else { return }
         
