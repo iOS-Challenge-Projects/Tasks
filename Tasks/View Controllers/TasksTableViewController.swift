@@ -39,13 +39,6 @@ class TasksTableViewController: UITableViewController {
     }()
     
     
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        //Realod data
-        tableView.reloadData()
-    }
-
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -69,6 +62,13 @@ class TasksTableViewController: UITableViewController {
         return cell
     }
  
+    //THis will name each of the sections
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let sectionInfo = fetchResultesController.sections?[section] else {
+            return nil
+        }
+        return sectionInfo.name.capitalized
+    }
 
  
     // Override to support editing the table view.
@@ -83,8 +83,6 @@ class TasksTableViewController: UITableViewController {
             //Save changes
             do{
                 try CoreDataStack.shared.mainContext.save()
-                //if the deletion from CoreData was successfully removed and saved then remove it from table view
-                tableView.deleteRows(at: [indexPath], with: .fade)
             }catch{
                 //if for some reason it could not be deleted reset it to original state
                 CoreDataStack.shared.mainContext.reset()
