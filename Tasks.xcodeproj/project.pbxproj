@@ -399,7 +399,7 @@
 				04633E48241950C50010F00E /* Tasks 2.xcdatamodel */,
 				044AB48E2416AE950081A60F /* Tasks.xcdatamodel */,
 			);
-			currentVersion = 044AB48E2416AE950081A60F /* Tasks.xcdatamodel */;
+			currentVersion = 04633E48241950C50010F00E /* Tasks 2.xcdatamodel */;
 			path = Tasks.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

@@ -11,17 +11,34 @@ import CoreData
 
 class TasksTableViewController: UITableViewController {
 
-    var tasks: [Task]{
-        //Fetch request to comunicate wit the DB
+//    var tasks: [Task]{
+//        //Fetch request to comunicate wit the DB
+//        let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
+//
+//        do{
+//            return try CoreDataStack.shared.mainContext.fetch(fetchRequest)
+//        }catch{
+//            NSLog("Error fetching tasks: \(error)")
+//            return []
+//        }
+//    }
+    
+    //A more efficient way of fetching data to avoid performace issues later
+    lazy var fetchResultesController: NSFetchedResultsController<Task> = {
         let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
+        //While fetching the data we will sort it in the priority they're in
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "priority", ascending: true), NSSortDescriptor(key: "name", ascending: true)]
+        let context = CoreDataStack.shared.mainContext
         
-        do{
-            return try CoreDataStack.shared.mainContext.fetch(fetchRequest)
-        }catch{
-            NSLog("Error fetching tasks: \(error)")
-            return []
-        }
-    }
+        //Create the fetch request controller
+        let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: "priority", cacheName: nil)
+        
+        frc.delegate = self
+        try? frc.performFetch()
+        return frc
+    }()
+    
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -33,12 +50,12 @@ class TasksTableViewController: UITableViewController {
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         
-        return 1
+        return fetchResultesController.sections?.count ?? 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
        
-        return tasks.count
+        return fetchResultesController.sections?[section].numberOfObjects ?? 0
     }
 
  
@@ -46,7 +63,8 @@ class TasksTableViewController: UITableViewController {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as? TaskCell else { return UITableViewCell() }
 
         // Configure the cell...
-        cell.task = tasks[indexPath.row]
+        //Object is like row but because it can be use with collection views is call object
+        cell.task = fetchResultesController.object(at: indexPath)
         
         return cell
     }
@@ -57,7 +75,7 @@ class TasksTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
-            let task = tasks[indexPath.row]
+            let task = fetchResultesController.object(at: indexPath)
             
             //Here we delete the specific task/entry
             CoreDataStack.shared.mainContext.delete(task)
@@ -90,13 +108,61 @@ class TasksTableViewController: UITableViewController {
                 //get index
                 if let indexPath = tableView.indexPathForSelectedRow{
                     //pass selected row to detail view
-                    detailVC.task = tasks[indexPath.row]
+                    detailVC.task = fetchResultesController.object(at: indexPath)
                 }
             }
         }else if segue.identifier == "NewTaskModelSegue"{
             
         }
     }
- 
+}
 
+//MARK: - TasksTableViewController
+
+
+extension TasksTableViewController: NSFetchedResultsControllerDelegate {
+    
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        //When a change is detected we begin updates
+        tableView.beginUpdates()
+    }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        //when we finish with changes we end updates
+        tableView.endUpdates()
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
+        //Add or remove entire sections from the view
+        switch type {
+        case .insert:
+            tableView.insertSections(IndexSet(integer: sectionIndex), with: .automatic)
+         case .delete:
+            tableView.deleteSections(IndexSet(integer: sectionIndex), with: .automatic)
+        default:
+            break
+        }
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        //moving inserting or deleting multiple rows
+        
+        switch type {
+        case .insert:
+            guard let newIndexPath = newIndexPath else { return }
+            tableView.insertRows(at: [newIndexPath], with: .automatic)
+        case .update:
+            guard let indexPath = indexPath else { return }
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+        case .move:
+            guard let oldIndexPath = indexPath, let newIndexPath = newIndexPath else { return }
+            tableView.deleteRows(at: [oldIndexPath], with: .automatic)
+            tableView.insertRows(at: [newIndexPath], with: .automatic)
+        case .delete:
+            guard let indexPath = indexPath else { return }
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+        @unknown default:
+            break
+        }
+    }
 }

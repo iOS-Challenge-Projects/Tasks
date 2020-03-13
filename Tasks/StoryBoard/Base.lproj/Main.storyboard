@@ -184,8 +184,10 @@
                     </view>
                     <navigationItem key="navigationItem" id="1Ua-yk-q2z"/>
                     <connections>
+                        <outlet property="completedButton" destination="FGC-dS-XVy" id="vnQ-Mh-7Lo"/>
                         <outlet property="nameTextField" destination="nyj-uF-42H" id="6Z1-cC-GhG"/>
                         <outlet property="notesTextView" destination="Lez-eH-NUc" id="VL6-HB-7kp"/>
+                        <outlet property="priorityControl" destination="c1f-xa-OYH" id="evu-Kc-Yoc"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

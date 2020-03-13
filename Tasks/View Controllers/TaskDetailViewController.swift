@@ -12,6 +12,8 @@ class TaskDetailViewController: UIViewController {
     
     @IBOutlet var nameTextField: UITextField!
     @IBOutlet var notesTextView: UITextView!
+    @IBOutlet var priorityControl: UISegmentedControl!
+    @IBOutlet var completedButton: UIButton!
     
     //MARK: - Properties
     
@@ -54,10 +56,15 @@ class TaskDetailViewController: UIViewController {
         if let task = task {
             guard let name = nameTextField.text, !name.isEmpty else { return }
              
-             let notes = notesTextView.text
+            let notes = notesTextView.text
+            
+            //Get the priority
+            let priorityIndex = priorityControl.selectedSegmentIndex
+            let priority = TaskPriority.allCases[priorityIndex]
             
             task.name = name
             task.notes = notes
+            task.priority = priority.rawValue
             
            saveTask()
         
@@ -69,8 +76,16 @@ class TaskDetailViewController: UIViewController {
         guard let name = nameTextField.text, !name.isEmpty else { return }
         
         let notes = notesTextView.text
-       
-        let _ = Task(name: name, notes: notes)
+        
+        //Get the priority
+        let priorityIndex = priorityControl.selectedSegmentIndex
+        
+        //Use the enum from the task+convinience
+        //AllCases is a property which provies an array of all the options in the enum
+        //So if the selected priority is 0 it will match the position zero in the array which is low
+        let priority = TaskPriority.allCases[priorityIndex]
+        
+        let _ = Task(name: name, notes: notes, priority: priority)
         
         saveTask()
         
