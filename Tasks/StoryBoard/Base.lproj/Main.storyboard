@@ -17,23 +17,38 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="TaskCell" textLabel="k2p-kQ-lbB" style="IBUITableViewCellStyleDefault" id="5LB-Q7-r3L">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="TaskCell" id="5LB-Q7-r3L" customClass="TaskCell" customModule="Tasks" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="414" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="5LB-Q7-r3L" id="BWN-hz-w9S">
                                     <rect key="frame" x="0.0" y="0.0" width="383" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="k2p-kQ-lbB">
-                                            <rect key="frame" x="20" y="0.0" width="355" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lmq-gJ-CXa">
+                                            <rect key="frame" x="20" y="10" width="20" height="24"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" image="circle" catalog="system"/>
+                                            <connections>
+                                                <action selector="toggleComplete:" destination="5LB-Q7-r3L" eventType="touchUpInside" id="dYc-AQ-H5m"/>
+                                            </connections>
+                                        </button>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Task Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cad-Qh-ev2">
+                                            <rect key="frame" x="56" y="11.5" width="73" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="lmq-gJ-CXa" firstAttribute="centerY" secondItem="BWN-hz-w9S" secondAttribute="centerY" id="CK0-OA-ebR"/>
+                                        <constraint firstItem="lmq-gJ-CXa" firstAttribute="leading" secondItem="BWN-hz-w9S" secondAttribute="leadingMargin" id="e0v-ys-kxT"/>
+                                        <constraint firstItem="Cad-Qh-ev2" firstAttribute="leading" secondItem="lmq-gJ-CXa" secondAttribute="trailing" constant="16" id="ef6-Fm-pOc"/>
+                                        <constraint firstItem="Cad-Qh-ev2" firstAttribute="centerY" secondItem="BWN-hz-w9S" secondAttribute="centerY" id="swF-gK-UPQ"/>
+                                    </constraints>
                                 </tableViewCellContentView>
                                 <connections>
+                                    <outlet property="completedButton" destination="lmq-gJ-CXa" id="b2J-wG-q9C"/>
+                                    <outlet property="taskTitleLabel" destination="Cad-Qh-ev2" id="Xgf-pm-SIL"/>
                                     <segue destination="BYZ-38-t0r" kind="show" identifier="ShowTaskDetailSegue" id="Y2B-Qj-t9l"/>
                                 </connections>
                             </tableViewCell>
@@ -102,14 +117,17 @@
                                         <rect key="frame" x="0.0" y="0.0" width="382" height="33.5"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Completed:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sRf-Bh-6kr">
-                                                <rect key="frame" x="0.0" y="0.0" width="328" height="33.5"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="334" height="33.5"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FGC-dS-XVy">
-                                                <rect key="frame" x="336" y="0.0" width="46" height="33.5"/>
-                                                <state key="normal" title="Button"/>
+                                            <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FGC-dS-XVy">
+                                                <rect key="frame" x="342" y="0.0" width="40" height="33.5"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="40" id="dWQ-Rd-V5c"/>
+                                                </constraints>
+                                                <state key="normal" image="circle" catalog="system"/>
                                             </button>
                                         </subviews>
                                     </stackView>
@@ -175,6 +193,9 @@
             <point key="canvasLocation" x="1383" y="147"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="circle" catalog="system" width="64" height="60"/>
+    </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Y2B-Qj-t9l"/>
     </inferredMetricsTieBreakers>
