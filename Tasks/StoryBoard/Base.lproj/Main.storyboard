@@ -25,21 +25,26 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lmq-gJ-CXa">
-                                            <rect key="frame" x="20" y="10" width="20" height="24"/>
+                                            <rect key="frame" x="20" y="7" width="30" height="30"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="30" id="GXN-8J-GXZ"/>
+                                                <constraint firstAttribute="width" constant="30" id="pDw-jw-gEp"/>
+                                            </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" image="circle" catalog="system"/>
                                             <connections>
                                                 <action selector="toggleComplete:" destination="5LB-Q7-r3L" eventType="touchUpInside" id="dYc-AQ-H5m"/>
                                             </connections>
                                         </button>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Task Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cad-Qh-ev2">
-                                            <rect key="frame" x="56" y="11.5" width="73" height="21"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Task Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cad-Qh-ev2">
+                                            <rect key="frame" x="66" y="11.5" width="309" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstAttribute="trailingMargin" secondItem="Cad-Qh-ev2" secondAttribute="trailing" id="2wo-o9-Gpo"/>
                                         <constraint firstItem="lmq-gJ-CXa" firstAttribute="centerY" secondItem="BWN-hz-w9S" secondAttribute="centerY" id="CK0-OA-ebR"/>
                                         <constraint firstItem="lmq-gJ-CXa" firstAttribute="leading" secondItem="BWN-hz-w9S" secondAttribute="leadingMargin" id="e0v-ys-kxT"/>
                                         <constraint firstItem="Cad-Qh-ev2" firstAttribute="leading" secondItem="lmq-gJ-CXa" secondAttribute="trailing" constant="16" id="ef6-Fm-pOc"/>
