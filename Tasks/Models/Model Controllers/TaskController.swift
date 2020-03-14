@@ -28,17 +28,22 @@ class TaskController {
     
     //create a fetchTaskFromServer
     //{_ in} means a empty closure
-    func fetchTaskFromServer(completion: @escaping CompletionHandler = {_ in}){
+    func fetchTaskFromServer(completion: @escaping CompletionHandler = { _ in }) {
+        
+        
         let requestURL = baseURL.appendingPathExtension("json")
         
-        URLSession.shared.dataTask(with: requestURL){(data, _, error) in
+        URLSession.shared.dataTask(with: requestURL) { (data, _, error) in
+            
             if let error = error {
                 NSLog("Error Fetching tasks from firebase: \(error)")
                 completion(error)
                 return
             }
             
+            
             guard let data = data else {
+                NSLog("No data found in firebase")
                 completion(NSError())
                 return
             }
@@ -47,20 +52,23 @@ class TaskController {
             do{
                 //Create an array of values from firebase because of the way firebase
                 //returns the data needs to be formated
-                let taskRepresentations = try Array(JSONDecoder().decode([String: TaskRepresentation].self, from: data).values)
+                let taskRepresentations = Array(try JSONDecoder().decode([String: TaskRepresentation].self, from: data).values)
                 
                 //Convert into NSManageObjects and store it in CoreData
                 try self.updateTasks(with: taskRepresentations)
+                completion(nil)
             }catch{
-                NSLog("Error Fetching tasks from firebase: \(error)")
+                NSLog("Error Decoding task rep from firebase: \(error)")
+                completion(NSError())
             }
-        }
+            
+        }.resume()
     }
     
     //MARK: - Private
     
     private func updateTasks(with representations: [TaskRepresentation]) throws {
-       
+        
         //Check if all task has UUID's
         let taskWithID = representations.filter { $0.identifier != nil }
         //Get the UUID's compactMap is like map but remove any nils
@@ -76,8 +84,7 @@ class TaskController {
         
         do{
             let existingTasks = try CoreDataStack.shared.mainContext.fetch(fetchRequest)
-            
-             //2.Match the managedTask with the FireBase tasks
+            //2.Match the managedTask with the FireBase tasks
             //iterate over the CD tasks
             for task in existingTasks {
                 guard let id = task.identifier, let representation = representationByID[id] else { continue }
@@ -89,7 +96,6 @@ class TaskController {
                 for representation in taskToCreate.values {
                     Task(taskRepresentation: representation)
                 }
-                
             }
             
         } catch {
@@ -97,7 +103,7 @@ class TaskController {
         }
         
         //5. Save all this in CoreData
-        
+        try CoreDataStack.shared.mainContext.save()
     }
     
     //MARK: - Private
@@ -106,7 +112,7 @@ class TaskController {
     private func update(task: Task, with representation: TaskRepresentation){
         task.name = representation.name
         task.notes = representation.notes
-        task.completed = representation.completed
+        task.completed = representation.completed ?? false
         task.priority = representation.priority
         
     }

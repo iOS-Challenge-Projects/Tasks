@@ -11,18 +11,6 @@ import CoreData
 
 class TasksTableViewController: UITableViewController {
 
-//    var tasks: [Task]{
-//        //Fetch request to comunicate wit the DB
-//        let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
-//
-//        do{
-//            return try CoreDataStack.shared.mainContext.fetch(fetchRequest)
-//        }catch{
-//            NSLog("Error fetching tasks: \(error)")
-//            return []
-//        }
-//    }
-    
     //A more efficient way of fetching data to avoid performace issues later
     lazy var fetchResultesController: NSFetchedResultsController<Task> = {
         let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
@@ -38,6 +26,24 @@ class TasksTableViewController: UITableViewController {
         return frc
     }()
     
+    //Initialize TaskController to get data sync
+    let taskController = TaskController()
+    
+    //MARK: - Actions
+    //Let user fetch data whenever they want by pulling down the tableView
+    
+    @IBAction func refresh(_ sender: Any){
+        
+        //When pulling down it will start fetching and then when done it runs
+        //the code inside the closure in this case end refreshing
+        //so the loading animation should end
+        
+        taskController.fetchTaskFromServer { _ in
+            
+            self.refreshControl?.endRefreshing()
+ 
+        }
+    }
     
     // MARK: - Table view data source
 

@@ -24,7 +24,7 @@ extension Task{
     var taskRepresentation: TaskRepresentation? {
         guard let name = name, let priority = priority else { return nil }
         
-        return TaskRepresentation(name: name, notes: notes, priority: priority, completed: completed, identifier: identifier?.uuidString)
+        return TaskRepresentation(name: name, notes: notes, priority: priority, identifier: identifier?.uuidString, completed: completed)
     }
     
     //Creates a new manage object from rawdata ( CoreData )
@@ -53,7 +53,7 @@ extension Task{
         self.init(name: taskRepresentation.name,
                   notes: taskRepresentation.notes,
                   priority: priority,
-                  completed: taskRepresentation.completed,
+                  completed: taskRepresentation.completed ?? false,
                   identifier: identifier,
                   context: context)
     }

@@ -13,6 +13,6 @@ struct TaskRepresentation: Codable {
     var name: String
     var notes: String?
     var priority: String
-    var completed: Bool = false
     var identifier: String?
+    var completed: Bool?
 }
