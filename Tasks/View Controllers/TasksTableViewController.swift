@@ -50,6 +50,11 @@ class TasksTableViewController: UITableViewController {
        
         return fetchResultesController.sections?[section].numberOfObjects ?? 0
     }
+    
+    //Use to set heigh and prevent warning
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 44.0
+    }
 
  
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

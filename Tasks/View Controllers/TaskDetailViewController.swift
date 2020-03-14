@@ -30,6 +30,15 @@ class TaskDetailViewController: UIViewController {
         // Clear field
         notesTextView.text = ""
         
+        //When updating set the priority to the current saved priority to prevent going to the default
+        let priority: TaskPriority
+        if let taskPriority = task?.priority{
+            priority = TaskPriority(rawValue: taskPriority)!
+        }else{
+            priority = .normal
+        }
+        priorityControl.selectedSegmentIndex = TaskPriority.allCases.firstIndex(of: priority) ?? 1
+        
     }
     
     
@@ -65,11 +74,12 @@ class TaskDetailViewController: UIViewController {
             task.name = name
             task.notes = notes
             task.priority = priority.rawValue
-            
            saveTask()
         
         }
     }
+    
+    //MARK: - Actions
     
     //Use @objc due to the way we call the func in the action navButton above
     @objc func save(){
@@ -94,6 +104,20 @@ class TaskDetailViewController: UIViewController {
     
     }
     
+    @IBAction func toggleComplet(_ sender: UIButton){
+        task?.completed.toggle()
+        
+        guard let task = task else {return }
+        
+        completedButton.setImage(task.completed ? UIImage(systemName: "checkmark.circle.fill") : UIImage(systemName: "circle"), for: .normal)
+        
+        saveTask()
+        
+    }
+    
+    
+    
+    //MARK: - Private
     
     private func saveTask(){
         do{

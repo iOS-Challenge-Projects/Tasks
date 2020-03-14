@@ -35,6 +35,7 @@
 		044AB49224172DE20081A60F /* Task+Convinience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Task+Convinience.swift"; sourceTree = "<group>"; };
 		04633E48241950C50010F00E /* Tasks 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Tasks 2.xcdatamodel"; sourceTree = "<group>"; };
 		04633E4924195D0C0010F00E /* TaskCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCell.swift; sourceTree = "<group>"; };
+		04D6590C241CFFF300DF9A08 /* Tasks 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Tasks 3.xcdatamodel"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -396,10 +397,11 @@
 		044AB48D2416AE950081A60F /* Tasks.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				04D6590C241CFFF300DF9A08 /* Tasks 3.xcdatamodel */,
 				04633E48241950C50010F00E /* Tasks 2.xcdatamodel */,
 				044AB48E2416AE950081A60F /* Tasks.xcdatamodel */,
 			);
-			currentVersion = 04633E48241950C50010F00E /* Tasks 2.xcdatamodel */;
+			currentVersion = 04D6590C241CFFF300DF9A08 /* Tasks 3.xcdatamodel */;
 			path = Tasks.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
