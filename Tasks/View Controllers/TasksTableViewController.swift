@@ -40,7 +40,10 @@ class TasksTableViewController: UITableViewController {
         
         taskController.fetchTaskFromServer { _ in
             
-            self.refreshControl?.endRefreshing()
+            DispatchQueue.main.async {
+                 self.refreshControl?.endRefreshing()
+            }
+           
  
         }
     }

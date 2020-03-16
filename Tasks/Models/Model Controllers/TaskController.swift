@@ -53,7 +53,7 @@ class TaskController {
                 //Create an array of values from firebase because of the way firebase
                 //returns the data needs to be formated
                 let taskRepresentations = Array(try JSONDecoder().decode([String: TaskRepresentation].self, from: data).values)
-                
+                print(taskRepresentations)
                 //Convert into NSManageObjects and store it in CoreData
                 try self.updateTasks(with: taskRepresentations)
                 completion(nil)
@@ -65,6 +65,49 @@ class TaskController {
         }.resume()
     }
     
+    //When creating a new task we send it to FB here (and we already created the method to save to CD
+    func sendTasksToServer(task: Task, completion: @escaping CompletionHandler = { _ in }) {
+        //if the task does not have a UUID already create one
+        let uuid = task.identifier ?? UUID()
+        
+        //append the uui and "json" to the end of the URL as require by firebase
+        let requestURL = baseURL.appendingPathComponent(uuid.uuidString).appendingPathComponent("json")
+        
+        var request = URLRequest(url: requestURL)
+        
+        //We use put which will update existing entries but if a match is not found then we create a new one
+        request.httpMethod = "PUT"
+        
+        do {
+            guard var representation = task.taskRepresentation else {
+                completion(NSError())
+                return
+            }
+            //ensure the manage object and FB has the same uuid
+            representation.identifier = uuid.uuidString
+            task.identifier = uuid
+            
+            try CoreDataStack.shared.mainContext.save()
+            
+            request.httpBody = try JSONEncoder().encode(representation)
+        } catch {
+            NSLog("Error encoding task to FB: \(error)")
+            completion(error)
+            return
+        }
+        
+        URLSession.shared.dataTask(with: request) {data, _, error in
+            if let error = error {
+                NSLog("Error PUTing task to server: \(error)")
+                completion(error)
+                return
+            }
+            //if everything worked just pass nil to completion
+            completion(nil)
+            
+        }.resume()
+    }
+    
     //MARK: - Private
     
     private func updateTasks(with representations: [TaskRepresentation]) throws {
@@ -72,21 +115,22 @@ class TaskController {
         //Check if all task has UUID's
         let taskWithID = representations.filter { $0.identifier != nil }
         //Get the UUID's compactMap is like map but remove any nils
-        let identidiesToFetch = taskWithID.compactMap { UUID(uuidString: $0.identifier!)}
+        let identitiesToFetch = taskWithID.compactMap { UUID(uuidString: $0.identifier!)}
         //Create collection which has the UUID as the key and values are taskRepresentationObjects
-        let representationByID = Dictionary(uniqueKeysWithValues: zip(identidiesToFetch, taskWithID))
+        let representationByID = Dictionary(uniqueKeysWithValues: zip(identitiesToFetch, taskWithID))
         var taskToCreate = representationByID
         
         //1.Fetch all tasks from coredata
         let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
         //Here we are filtering, we compare CD with FB to see if is in sync
-        fetchRequest.predicate = NSPredicate(format: "identifier IN %@", identidiesToFetch)
+        fetchRequest.predicate = NSPredicate(format: "identifier IN %@", identitiesToFetch)
         
         do{
             let existingTasks = try CoreDataStack.shared.mainContext.fetch(fetchRequest)
             //2.Match the managedTask with the FireBase tasks
             //iterate over the CD tasks
             for task in existingTasks {
+                
                 guard let id = task.identifier, let representation = representationByID[id] else { continue }
                 self.update(task: task, with: representation)
                 //remove all the task that match on both side so only whats new is left to sync and prevent duplicates
@@ -97,13 +141,13 @@ class TaskController {
                     Task(taskRepresentation: representation)
                 }
             }
-            
+            //5. Save all this in CoreData
+            try CoreDataStack.shared.mainContext.save()
         } catch {
             NSLog("Error fetching data: \(error)")
         }
         
-        //5. Save all this in CoreData
-        try CoreDataStack.shared.mainContext.save()
+        
     }
     
     //MARK: - Private

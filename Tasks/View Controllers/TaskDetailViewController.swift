@@ -16,10 +16,11 @@ class TaskDetailViewController: UIViewController {
     @IBOutlet var completedButton: UIButton!
     
     //MARK: - Properties
-    
-    
+
     //This is a managed object from the Core Data Model
     var task: Task?
+    
+    var taskController: TaskController?
 
     
     //MARK: - View LifeCyle
@@ -50,6 +51,17 @@ class TaskDetailViewController: UIViewController {
             title = task.name
             nameTextField.text = task.name
             notesTextView.text = task.notes
+            
+            //Make the priority controll be up to date
+            let priority: TaskPriority
+            
+            if let taskPriority = task.priority {
+                priority = TaskPriority(rawValue: taskPriority)!
+            }else{
+                priority = .normal
+            }
+            priorityControl.selectedSegmentIndex = TaskPriority.allCases.firstIndex(of: priority) ?? 1
+             completedButton.setImage(task.completed ? UIImage(systemName: "checkmark.circle.fill") : UIImage(systemName: "circle"), for: .normal)
         }else{
             //If no task was passed in, assume the user wants to create one
             //so add a button to the navbar to "save" the new task
@@ -95,9 +107,14 @@ class TaskDetailViewController: UIViewController {
         //So if the selected priority is 0 it will match the position zero in the array which is low
         let priority = TaskPriority.allCases[priorityIndex]
         
-        let _ = Task(name: name, notes: notes, priority: priority)
+        //1.Create task (it will be in temp context)
+        let task = Task(name: name, notes: notes, priority: priority)
         
+        //2.Save to CoreData's persistant storage
         saveTask()
+        
+        //Save the Task manage object to FireBase
+        taskController?.sendTasksToServer(task: task)
         
         //Dismiss modal
         navigationController?.dismiss(animated: true, completion: nil)
