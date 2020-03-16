@@ -23,7 +23,7 @@ extension Task{
     //1. This computed property allows any manage object to become a TaskRepresentation for sending to FireBase
     var taskRepresentation: TaskRepresentation? {
         guard let name = name, let priority = priority else { return nil }
-        
+
         return TaskRepresentation(name: name, notes: notes, priority: priority, identifier: identifier?.uuidString, completed: completed)
     }
     

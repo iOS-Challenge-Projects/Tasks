@@ -53,10 +53,14 @@ class TaskController {
                 //Create an array of values from firebase because of the way firebase
                 //returns the data needs to be formated
                 let taskRepresentations = Array(try JSONDecoder().decode([String: TaskRepresentation].self, from: data).values)
-                print(taskRepresentations)
+                
                 //Convert into NSManageObjects and store it in CoreData
                 try self.updateTasks(with: taskRepresentations)
+//                 for representation in taskRepresentations {
+//                     Task(taskRepresentation: representation)
+//                 }
                 completion(nil)
+
             }catch{
                 NSLog("Error Decoding task rep from firebase: \(error)")
                 completion(NSError())
@@ -86,8 +90,10 @@ class TaskController {
             //ensure the manage object and FB has the same uuid
             representation.identifier = uuid.uuidString
             task.identifier = uuid
-            
-            try CoreDataStack.shared.mainContext.save()
+            //instead of using the mainContext save method we use our own
+            //if we dont pass an argument then it defaults to the mainContext
+            //try CoreDataStack.shared.mainContext.save()
+            try CoreDataStack.shared.save()
             
             request.httpBody = try JSONEncoder().encode(representation)
         } catch {
@@ -108,6 +114,26 @@ class TaskController {
         }.resume()
     }
     
+    
+    func deleteTaskFromServer(task: Task, completion: @escaping CompletionHandler =  {_ in })  {
+        guard let uuid = task.identifier else {
+            completion(NSError())
+            return
+        }
+        
+        let requestURL = baseURL.appendingPathComponent(uuid.uuidString).appendingPathComponent("json")
+        var request = URLRequest(url: requestURL)
+        request.httpMethod = "DELETE"
+        
+        URLSession.shared.dataTask(with: request){data, response, error in
+            
+            print(response!)
+            
+            completion(error)
+            
+        }.resume()
+    }
+    
     //MARK: - Private
     
     private func updateTasks(with representations: [TaskRepresentation]) throws {
@@ -115,7 +141,7 @@ class TaskController {
         //Check if all task has UUID's
         let taskWithID = representations.filter { $0.identifier != nil }
         //Get the UUID's compactMap is like map but remove any nils
-        let identitiesToFetch = taskWithID.compactMap { UUID(uuidString: $0.identifier!)}
+        let identitiesToFetch = taskWithID.compactMap { UUID(uuidString: $0.identifier!) }
         //Create collection which has the UUID as the key and values are taskRepresentationObjects
         let representationByID = Dictionary(uniqueKeysWithValues: zip(identitiesToFetch, taskWithID))
         var taskToCreate = representationByID
@@ -125,29 +151,40 @@ class TaskController {
         //Here we are filtering, we compare CD with FB to see if is in sync
         fetchRequest.predicate = NSPredicate(format: "identifier IN %@", identitiesToFetch)
         
-        do{
-            let existingTasks = try CoreDataStack.shared.mainContext.fetch(fetchRequest)
-            //2.Match the managedTask with the FireBase tasks
-            //iterate over the CD tasks
-            for task in existingTasks {
-                
-                guard let id = task.identifier, let representation = representationByID[id] else { continue }
-                self.update(task: task, with: representation)
-                //remove all the task that match on both side so only whats new is left to sync and prevent duplicates
-                taskToCreate.removeValue(forKey: id)
+        //1. Create Singleton to get a new background context
+        let newBGContext = CoreDataStack.shared.container.newBackgroundContext()
+        
+        //2.wrap the entire "do" block in a performAndWait
+        newBGContext.performAndWait {
+            
+            
+            do{
+                let existingTasks = try newBGContext.fetch(fetchRequest)
+                //2.Match the managedTask with the FireBase tasks
+                //iterate over the CD tasks
+                for task in existingTasks {
+                    
+                    guard let id = task.identifier, let representation = representationByID[id] else { continue }
+                    self.update(task: task, with: representation)
+                    //remove all the task that match on both side so only whats new is left to sync and prevent duplicates
+                    taskToCreate.removeValue(forKey: id)
+                    
+                }
                 
                 //4.For none match / new tasks from FB create a CD manage object
                 for representation in taskToCreate.values {
-                    Task(taskRepresentation: representation)
+                    Task(taskRepresentation: representation, context: newBGContext)
                 }
+                
+            } catch {
+                NSLog("Error fetching data: \(error)")
             }
-            //5. Save all this in CoreData
-            try CoreDataStack.shared.mainContext.save()
-        } catch {
-            NSLog("Error fetching data: \(error)")
+            
+            
         }
         
-        
+        //5. Save all this in CoreData with the BGContext created above
+        try CoreDataStack.shared.save(context: newBGContext)
     }
     
     //MARK: - Private
@@ -156,8 +193,9 @@ class TaskController {
     private func update(task: Task, with representation: TaskRepresentation){
         task.name = representation.name
         task.notes = representation.notes
-        task.completed = representation.completed ?? false
         task.priority = representation.priority
+        task.completed = representation.completed ?? false
+        
         
     }
 }

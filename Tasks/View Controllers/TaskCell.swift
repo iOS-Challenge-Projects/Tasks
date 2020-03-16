@@ -33,7 +33,7 @@ class TaskCell: UITableViewCell {
         completedButton.setImage(task.completed ? UIImage(systemName: "checkmark.circle.fill") : UIImage(systemName: "circle"), for: .normal)
         
         do{
-            try CoreDataStack.shared.mainContext.save()
+            try CoreDataStack.shared.save()
         }catch{
             NSLog("Error while saving data \(error)")
         }

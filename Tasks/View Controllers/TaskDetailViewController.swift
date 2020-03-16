@@ -24,8 +24,7 @@ class TaskDetailViewController: UIViewController {
 
     
     //MARK: - View LifeCyle
-    
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Clear field
@@ -41,7 +40,6 @@ class TaskDetailViewController: UIViewController {
         priorityControl.selectedSegmentIndex = TaskPriority.allCases.firstIndex(of: priority) ?? 1
         
     }
-    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -86,8 +84,12 @@ class TaskDetailViewController: UIViewController {
             task.name = name
             task.notes = notes
             task.priority = priority.rawValue
-           saveTask()
+    
+            //SAVE TO CoreData
+            saveTask()
         
+            //save update to Firebase
+            taskController?.sendTasksToServer(task: task)
         }
     }
     
@@ -133,12 +135,11 @@ class TaskDetailViewController: UIViewController {
     }
     
     
-    
     //MARK: - Private
     
     private func saveTask(){
         do{
-            try CoreDataStack.shared.mainContext.save()
+            try CoreDataStack.shared.save()
         }catch{
             NSLog("Error while saving data \(error)")
         }

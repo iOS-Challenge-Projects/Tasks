@@ -91,22 +91,35 @@ class TasksTableViewController: UITableViewController {
             // Delete the row from the data source
             let task = fetchResultesController.object(at: indexPath)
             
-            //Here we delete the specific task/entry
-            CoreDataStack.shared.mainContext.delete(task)
-            
-            //Save changes
-            do{
-                try CoreDataStack.shared.mainContext.save()
-            }catch{
-                //if for some reason it could not be deleted reset it to original state
-                CoreDataStack.shared.mainContext.reset()
-                NSLog("Error saving managed Object: \(error)")
+            //First delete from firebase and only if succeeds the
+            //completion will run to delete from CoreData
+            //If there is an error deleting from FB then it also
+            //wont be delete it from CD to keep in sync
+            taskController.deleteTaskFromServer(task: task) { (error) in
+                if let error = error {
+                    NSLog("Error deleting task from firebase: \(error)")
+                    return
+                }
+                
+                //Must be done on main queu
+                DispatchQueue.main.async {
+                    
+                    //Here we delete the specific task/entry
+                    CoreDataStack.shared.mainContext.delete(task)
+                    
+                    //Save changes
+                    do{
+                        try CoreDataStack.shared.save()
+                    }catch{
+                        //if for some reason it could not be deleted reset it to original state
+                        CoreDataStack.shared.mainContext.reset()
+                        NSLog("Error saving managed Object: \(error)")
+                    }
+                }
             }
-            
-            
         }
     }
- 
+    
 
     // MARK: - Navigation
 
@@ -121,10 +134,17 @@ class TasksTableViewController: UITableViewController {
                 if let indexPath = tableView.indexPathForSelectedRow{
                     //pass selected row to detail view
                     detailVC.task = fetchResultesController.object(at: indexPath)
+                    detailVC.taskController = taskController
                 }
             }
         }else if segue.identifier == "NewTaskModelSegue"{
             
+            //Since there is a navigationController in between this viewControllers
+            //We must do as follow to downcast both
+            if let navC = segue.destination as? UINavigationController, let detailVC = navC.viewControllers[0] as? TaskDetailViewController {
+                
+                detailVC.taskController = taskController
+            }
         }
     }
 }
