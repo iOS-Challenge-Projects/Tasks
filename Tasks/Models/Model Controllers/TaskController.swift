@@ -31,7 +31,7 @@ class TaskController {
     func fetchTaskFromServer(completion: @escaping CompletionHandler = { _ in }) {
         
         
-        let requestURL = baseURL.appendingPathExtension("json")
+        let requestURL = baseURL.appendingPathExtension(".json")
         
         URLSession.shared.dataTask(with: requestURL) { (data, _, error) in
             
